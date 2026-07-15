@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Sistema Monitoreo Deportivo",
+    "slug": "monitoreo-deportivo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2563eb"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monitoreodeportivo.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2563eb"
+      },
+      "package": "com.monitoreodeportivo.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-sensors",
+      "expo-notifications",
+      "expo-task-manager",
+      "expo-background-fetch",
+      "expo-location"
+    ],
+    "extra": {
+      "firebase": {
+        "apiKey": "TU_API_KEY",
+        "authDomain": "tu-proyecto.firebaseapp.com",
+        "databaseURL": "https://tu-proyecto.firebaseio.com",
+        "projectId": "tu-proyecto",
+        "storageBucket": "tu-proyecto.appspot.com",
+        "messagingSenderId": "123456789",
+        "appId": "1:123456789:web:abc123"
+      }
+    }
+  }
+}
