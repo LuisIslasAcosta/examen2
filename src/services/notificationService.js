@@ -1,27 +1,40 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { ref, set, onValue, off } from 'firebase/database';
 import { database } from '../config/firebase';
-
-// Configurar comportamiento de notificaciones
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
 
 class NotificationService {
   constructor() {
     this.userId = null;
     this.notificationListener = null;
     this.responseListener = null;
+    this.isInitialized = false;
   }
 
   // Inicializar servicio
-  initialize(userId) {
-    this.userId = userId;
-    this.setupNotificationListeners();
+  async initialize(userId) {
+    try {
+      this.userId = userId;
+      
+      // Configurar comportamiento de notificaciones solo una vez
+      if (!this.isInitialized) {
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: true,
+          }),
+        });
+        this.isInitialized = true;
+      }
+      
+      // Configurar listeners solo si no están configurados
+      if (!this.notificationListener) {
+        this.setupNotificationListeners();
+      }
+    } catch (error) {
+      console.error('Error al inicializar NotificationService:', error);
+    }
   }
 
   // Configurar listeners de notificaciones
@@ -111,7 +124,7 @@ class NotificationService {
 
   // Escuchar notificaciones desde Firebase
   listenForNotifications(callback) {
-    if (!this.userId) return;
+    if (!this.userId || !database) return;
 
     const notificationsRef = ref(database, `notifications/${this.userId}`);
     
@@ -128,7 +141,7 @@ class NotificationService {
 
   // Guardar notificación en Firebase
   async saveNotificationToFirebase(notification) {
-    if (!this.userId) return;
+    if (!this.userId || !database) return;
 
     try {
       const notificationData = {

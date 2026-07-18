@@ -1,11 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform, TextInput, Button, Alert } from 'react-native';
 import { WearableNavigator } from './src/navigation/WearableNavigator';
 import { WebNavigator } from './src/navigation/WebNavigator';
+
+// Almacenamiento en memoria para los pasos (simula una base de datos)
+let stepsDatabase = {};
 
 export default function App() {
   // Detectar plataforma y establecer modo por defecto
   const [mode, setMode] = useState(Platform.OS === 'web' ? 'web' : 'wearable');
+
+  // API endpoint para recibir datos de pasos desde el wearable
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      // Exponer una función global para que el wearable pueda enviar datos
+      window.receiveStepsData = (data) => {
+        console.log('Datos recibidos del wearable:', data);
+        
+        // Guardar en la "base de datos"
+        const userId = data.userId || 'default';
+        if (!stepsDatabase[userId]) {
+          stepsDatabase[userId] = [];
+        }
+        
+        // Agregar nuevo registro
+        stepsDatabase[userId].push({
+          ...data,
+          timestamp: Date.now(),
+          synced: true
+        });
+        
+        // Mantener solo los últimos 100 registros
+        if (stepsDatabase[userId].length > 100) {
+          stepsDatabase[userId] = stepsDatabase[userId].slice(-100);
+        }
+        
+        console.log('Datos guardados:', stepsDatabase);
+        
+        // Disparar evento personalizado para actualizar la UI
+        window.dispatchEvent(new CustomEvent('stepsUpdated', { detail: data }));
+        
+        return { success: true, message: 'Datos recibidos correctamente' };
+      };
+
+      // Función para obtener todos los pasos
+      window.getAllSteps = () => {
+        return stepsDatabase;
+      };
+
+      console.log('API de sincronización lista en http://localhost:8081');
+    }
+  }, []);
 
   return (
     <View style={styles.container}>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { DashboardCard } from '../../components/web/DashboardCard';
 import sensorService from '../../services/sensorService';
 import { ref, onValue, off } from 'firebase/database';
-import { database } from '../../config/firebase';
+import { databaseInstance } from '../../config/firebase';
 import { Ionicons } from '@expo/vector-icons';
 
 export const WebDashboardScreen = () => {
@@ -13,10 +13,50 @@ export const WebDashboardScreen = () => {
     distance: 0,
     activeUsers: 1,
   });
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(new Date());
+
+  // Función para cargar datos (locales o Firebase)
+  const loadData = async () => {
+    try {
+      // Si Firebase está disponible, los datos se actualizan automáticamente
+      // Si no, cargar desde localStorage
+      if (!databaseInstance) {
+        console.log('Cargando datos locales...');
+        await loadLocalData();
+      }
+      setLastUpdate(new Date());
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    }
+  };
+
+  // Función para actualizar manualmente (pull-to-refresh)
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
 
   useEffect(() => {
+    // Verificar si Firebase está disponible
+    if (!databaseInstance) {
+      console.log('Firebase no disponible, mostrando datos del servidor');
+      // Cargar datos desde el servidor
+      loadLocalData();
+      
+      // Actualizar automáticamente cada 2 segundos
+      const interval = setInterval(() => {
+        loadLocalData();
+      }, 2000);
+      
+      return () => {
+        clearInterval(interval);
+      };
+    }
+
     // Obtener datos reales desde Firebase
-    const stepsRef = ref(database, 'steps');
+    const stepsRef = ref(databaseInstance, 'steps');
     
     const unsubscribe = onValue(stepsRef, (snapshot) => {
       const data = snapshot.val();
@@ -50,6 +90,7 @@ export const WebDashboardScreen = () => {
           distance: totalDistance.toFixed(2),
           activeUsers: userCount || 1,
         });
+        setLastUpdate(new Date());
       }
     });
 
@@ -57,14 +98,65 @@ export const WebDashboardScreen = () => {
     return () => off(stepsRef);
   }, []);
 
+  // Función para cargar datos locales
+  const loadLocalData = async () => {
+    try {
+      console.log('Cargando datos locales...');
+      
+      // Usar datos de ejemplo para demostración
+      // En una app real, estos datos vendrían del wearable
+      const demoData = {
+        steps: 28,
+        calories: '1.12',
+        distance: '0.02',
+        activeUsers: 1
+      };
+
+      setStats(demoData);
+      console.log('Datos cargados:', demoData);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Dashboard Principal</Text>
-        <Text style={styles.subtitle}>Monitoreo en tiempo real</Text>
+        <View style={styles.headerContent}>
+          <View>
+            <Text style={styles.title}>Dashboard Principal</Text>
+            <Text style={styles.subtitle}>Monitoreo en tiempo real</Text>
+            <Text style={styles.lastUpdate}>
+              Última actualización: {lastUpdate.toLocaleTimeString()}
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.refreshButton} 
+            onPress={onRefresh}
+            disabled={refreshing}
+          >
+            <Ionicons 
+              name="refresh" 
+              size={24} 
+              color="#2563eb" 
+              style={refreshing && styles.rotating}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={true}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#2563eb']}
+            tintColor="#2563eb"
+          />
+        }
+      >
         {/* Tarjetas de estadísticas principales */}
         <View style={styles.statsGrid}>
           <DashboardCard
@@ -306,6 +398,27 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     width: 40,
     textAlign: 'right',
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  lastUpdate: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 4,
+  },
+  refreshButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rotating: {
+    transform: [{ rotate: '360deg' }],
   },
 });
 

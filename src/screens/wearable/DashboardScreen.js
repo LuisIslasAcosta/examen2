@@ -24,11 +24,15 @@ export const DashboardScreen = ({ navigation }) => {
   }, []);
 
   const initializeServices = async () => {
-    const userId = 'user_demo'; // En producción, obtener del auth
-    sensorService.initialize(userId);
-    notificationService.initialize(userId);
-    
-    await notificationService.requestPermissions();
+    try {
+      const userId = 'user_demo'; // En producción, obtener del auth
+      sensorService.initialize(userId);
+      await notificationService.initialize(userId);
+      
+      await notificationService.requestPermissions();
+    } catch (error) {
+      console.error('Error al inicializar servicios:', error);
+    }
   };
 
   useEffect(() => {
@@ -48,13 +52,27 @@ export const DashboardScreen = ({ navigation }) => {
   }, []);
 
   const toggleTracking = async () => {
+    console.log('Botón presionado, isTracking:', isTracking);
+    
     if (isTracking) {
+      console.log('Deteniendo seguimiento...');
       sensorService.stopStepTracking();
       setIsTracking(false);
     } else {
-      const success = await sensorService.startStepTracking();
-      if (success) {
-        setIsTracking(true);
+      console.log('Iniciando seguimiento...');
+      try {
+        const success = await sensorService.startStepTracking();
+        console.log('Resultado de startStepTracking:', success);
+        if (success) {
+          setIsTracking(true);
+          console.log('Estado actualizado a tracking activo');
+        } else {
+          console.log('No se pudo iniciar el seguimiento');
+          alert('No se pudo iniciar el seguimiento. Verifica que los sensores estén disponibles.');
+        }
+      } catch (error) {
+        console.error('Error en toggleTracking:', error);
+        alert('Error: ' + error.message);
       }
     }
   };
@@ -97,6 +115,7 @@ export const DashboardScreen = ({ navigation }) => {
       <TouchableOpacity 
         style={[styles.button, isTracking ? styles.buttonActive : styles.buttonInactive]}
         onPress={toggleTracking}
+        activeOpacity={0.7}
       >
         <Ionicons 
           name={isTracking ? "pause" : "play"} 
