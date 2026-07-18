@@ -239,14 +239,5 @@ npm test
 
 ---
 
-## Documentación adicional
-
-- `DOCUMENTACION_PROYECTO.md` - Documentación completa del proyecto
-- `docs/BASE_DE_DATOS.sql` - Esquema de base de datos
-- `docs/MANUAL_TECNICO.md` - Manual técnico
-- `docs/MANUAL_USUARIO.md` - Manual de usuario
-- `INSTRUCCIONES_SINCRONIZACION.md` - Guía de sincronización
-
----
 
 **Versión:** 1.0.0
