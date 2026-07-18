@@ -1,279 +1,252 @@
-# 🏃‍♂️ Sistema de Monitoreo Deportivo Wearable
-
-**Universidad Tecnológica del Valle de Toluca**  
-Materia: Desarrollo para Dispositivos Inteligentes  
-Docente: Mtro. Roberto Vinicio Camacho Mendoza  
-Fecha: 08 de julio de 2026
+# Sistema de Monitoreo Deportivo Wearable
 
 ---
 
-## 📋 Descripción del Proyecto
+## ¿Qué es?
 
-Solución tecnológica integral para el monitoreo de actividad física en tiempo real, compuesta por una aplicación wearable (Android) y una plataforma web centralizada para la visualización de datos deportivos.
-
-### 🎯 Características Principales
-
-- **Detección de pasos** en tiempo real usando el acelerómetro del dispositivo
-- **Cálculo automático** de calorías quemadas y distancia recorrida
-- **Dashboard web** con visualización de estadísticas
-- **Actualización automática** cada 2 segundos
-- **Funcionamiento offline** sin necesidad de conexión constante
-- **Interfaz tipo smartwatch** optimizada para dispositivos móviles
+Una aplicación que convierte tu celular Android en un smartwatch deportivo. Usa el acelerómetro para detectar pasos, calcular calorías y distancia recorrida. Incluye un dashboard web para visualizar las estadísticas en tiempo real.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Características
 
-### Aplicación Wearable
-- **React Native** - Framework de desarrollo móvil
-- **Expo** - Plataforma de desarrollo
-- **Expo Sensors** - API de sensores (acelerómetro)
-- **Firebase** - Base de datos en tiempo real (opcional)
-
-### Aplicación Web
-- **React Native Web** - Framework para web
-- **Expo** - Plataforma de desarrollo
-- **Fetch API** - Comunicación HTTP
-
-### Servidor (Opcional)
-- **Node.js** - Runtime de JavaScript
-- **Express** - Framework web
-- **CORS** - Manejo de cross-origin requests
+- **Detección de pasos** en tiempo real usando el acelerómetro
+- **Cálculo automático** de calorías quemadas y distancia en km
+- **Meta diaria** de 10,000 pasos con progreso visual
+- **Dashboard web** con actualización automática cada 2 segundos
+- **Notificaciones push** para metas alcanzadas
+- **Modo offline** - funciona sin internet
+- **Sincronización bidireccional** entre wearable y web
 
 ---
 
-## 📱 Estructura del Proyecto
+## Tecnologías
+
+### Core
+- **React Native 0.81.5** + **Expo 54.0.0** - Framework principal
+- **React Native Web 0.21.0** - Soporte para navegador
+- **TypeScript 5.9.2** - Tipado estático
+
+### Servicios nativos
+- **Expo Sensors 15.0.8** - Acelerómetro
+- **Expo Location 19.0.8** - Geolocalización
+- **Expo Notifications 0.32.17** - Notificaciones push
+- **Expo Task Manager 14.0.9** - Tareas en background
+- **Expo Background Fetch 14.0.9** - Sincronización en background
+
+### Backend
+- **Node.js** + **Express 5.2.1** - API REST (puerto 3000)
+- **Firebase 10.7.0** - Base de datos en tiempo real (opcional)
+
+### Navegación y UI
+- **React Navigation 6.1.0** - Navegación entre pantallas
+- **React Native SVG 15.12.1** - Gráficos vectoriales
+- **Ionicons** - Iconos
+
+### Build
+- **Capacitor 8.4.2** - Compilación nativa Android
+
+---
+
+## Estructura del proyecto
 
 ```
-monitoreo-deportivo-wearable/
-├── wearable/                 # Aplicación Android
-│   ├── App.js                # Punto de entrada
-│   ├── src/
-│   │   ├── screens/
-│   │   │   ├── wearable/     # Pantallas para modo wearable
-│   │   │   │   └── DashboardScreen.js
-│   │   │   └── web/          # Pantallas para modo web
-│   │   │       └── WebDashboardScreen.js
-│   │   ├── services/         # Servicios de la aplicación
-│   │   │   ├── sensorService.js    # Lógica de sensores
-│   │   │   └── syncService.js      # Sincronización
-│   │   ├── config/           # Configuraciones
-│   │   │   └── firebase.js
-│   │   └── navigation/       # Navegación
-│   │       ├── WearableNavigator.js
-│   │       └── WebNavigator.js
-│   ├── android/              # Configuración nativa Android
-│   ├── package.json
-│   └── app.json
-├── server/                   # Servidor API (opcional)
-│   └── server.js
-├── docs/                     # Documentación
-│   ├── MANUAL_TECNICO.md
-│   ├── MANUAL_USUARIO.md
-│   └── DICCIONARIO_DE_DATOS.md
-├── DOCUMENTACION_PROYECTO.md # Documentación completa
-├── INSTRUCCIONES_SINCRONIZACION.md
-├── package.json
-└── README.md
+sistema-monitoreo-deportivo/
+├── App.js                      # Punto de entrada con selector de modo
+├── server.js                   # API REST para sincronización
+├── package.json                # Dependencias
+├── src/
+│   ├── screens/
+│   │   ├── wearable/           # Modo reloj
+│   │   │   ├── DashboardScreen.js      # Pantalla principal
+│   │   │   ├── SensorsScreen.js        # Datos del acelerómetro
+│   │   │   ├── NotificationsScreen.js  # Historial de notificaciones
+│   │   │   └── SettingsScreen.js       # Configuración
+│   │   └── web/                # Modo dashboard
+│   │       ├── WebDashboardScreen.js   # Dashboard principal
+│   │       ├── DataVisualizationScreen.js
+│   │       ├── EventsHistoryScreen.js
+│   │       ├── DevicesScreen.js
+│   │       └── NotificationsWebScreen.js
+│   ├── services/
+│   │   ├── sensorService.js            # Lógica de detección de pasos
+│   │   ├── syncService.js              # Sincronización con servidor
+│   │   └── notificationService.js      # Gestión de notificaciones
+│   ├── config/
+│   │   └── firebase.js                 # Configuración Firebase
+│   ├── components/
+│   │   ├── WatchFace.js                # Reloj con progreso circular
+│   │   └── web/
+│   │       └── DashboardCard.js        # Tarjetas de estadísticas
+│   └── navigation/
+│       ├── WearableNavigator.js        # Navegación wearable
+│       └── WebNavigator.js             # Navegación web
+└── android/                           # Configuración nativa
 ```
 
 ---
 
-## 🚀 Instalación y Configuración
+## Instalación
 
-### Requisitos Previos
-
-- Node.js (v18 o superior)
+### Requisitos
+- Node.js 18+
 - npm o yarn
-- Android Studio (para compilar la app Android)
-- Dispositivo Android (7.0 o superior)
+- Android Studio (para compilar APK)
+- Android 7.0+ (para modo wearable)
 
-### Pasos de Instalación
+### Pasos
 
-1. **Clonar el repositorio:**
 ```bash
-git clone https://github.com/[tu-usuario]/monitoreo-deportivo-wearable.git
-cd monitoreo-deportivo-wearable
-```
+# 1. Clonar repositorio
+git clone https://github.com/LuisIslasAcosta/examen2.git
+cd sistema-monitoreo-deportivo
 
-2. **Instalar dependencias:**
-```bash
+# 2. Instalar dependencias
 npm install
-```
 
-3. **Configurar Firebase (opcional):**
-   - Crear proyecto en Firebase Console
-   - Descargar archivo de configuración
-   - Actualizar `src/config/firebase.js`
+# 3. Iniciar servidor (terminal 1)
+node server.js
 
-4. **Ejecutar la aplicación:**
-```bash
-# Modo desarrollo web
+# 4. Ejecutar app (terminal 2)
+# Modo web
 npx expo start --web
 
-# Modo desarrollo Android
+# Modo Android
 npx expo run:android
 ```
 
-5. **Iniciar servidor (opcional):**
-```bash
-node server.js
+
+## Uso
+
+### Modo Wearable
+
+1. Abrir app en Android
+2. Seleccionar "Wearable" en el selector
+3. Conceder permisos de actividad física
+4. Presionar "Iniciar" para comenzar detección de pasos
+5. La app muestra en tiempo real:
+   - Pasos totales
+   - Calorías quemadas
+   - Distancia recorrida (km)
+   - Progreso hacia meta de 10,000 pasos
+
+**Pantallas:**
+- **Dashboard**: Vista principal con métricas
+- **Sensores**: Datos del acelerómetro en vivo
+- **Notificaciones**: Historial de alertas
+- **Settings**: Configuración
+
+### Modo Web
+
+1. Abrir `http://localhost:8081` en navegador
+2. Seleccionar "Web" en el selector
+3. Visualizar dashboard con estadísticas
+4. Actualización automática cada 2 segundos
+5. Refresh manual con botón o pull-to-refresh
+
+**Vistas disponibles:**
+- Dashboard principal
+- Historial de eventos
+- Dispositivos conectados
+- Notificaciones
+
+---
+
+## API del servidor
+
+El servidor Express corre en `http://localhost:3000`
+
+### Endpoints
+
+**POST /api/steps**
+Recibe datos de pasos desde el wearable
+```json
+{
+  "userId": "user_demo",
+  "totalSteps": 150,
+  "newSteps": 10,
+  "timestamp": 1699123456789,
+  "date": "2024-11-04"
+}
+```
+
+**GET /api/steps**
+Obtiene todos los registros de pasos
+```
+Query params: ?userId=user_demo
 ```
 
 ---
 
-## 📖 Uso de la Aplicación
-
-### Aplicación Wearable (Android)
-
-1. **Instalar la app** en tu dispositivo Android
-2. **Conceder permisos** de actividad física cuando se solicite
-3. **Presionar "Iniciar"** para comenzar el conteo de pasos
-4. **Caminar** - la app detectará automáticamente los pasos
-5. **Presionar "Detener"** al finalizar la actividad
-
-**Métricas mostradas:**
-- Pasos totales
-- Calorías quemadas (calculadas automáticamente)
-- Distancia recorrida en kilómetros
-
-### Aplicación Web
-
-1. **Abrir** `http://localhost:8081` en tu navegador
-2. **Seleccionar modo "Web"** en el selector superior
-3. **Visualizar** las estadísticas en el dashboard
-4. **Actualizar** manualmente con el botón de refresh o pull-to-refresh
-
-**Características del dashboard:**
-- Actualización automática cada 2 segundos
-- Tarjetas de estadísticas interactivas
-- Scroll vertical para ver todo el contenido
-- Indicador de última actualización
-
----
-
-## 🔧 Configuración Avanzada
-
-### Permisos Android
-
-La aplicación requiere los siguientes permisos en `android/app/src/main/AndroidManifest.xml`:
+## Permisos Android
 
 ```xml
 <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-### Variables de Entorno
-
-Para configurar Firebase, actualizar `src/config/firebase.js`:
-
-```javascript
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "tu-proyecto.firebaseapp.com",
-  databaseURL: "https://tu-proyecto.firebaseio.com",
-  projectId: "tu-proyecto",
-  storageBucket: "tu-proyecto.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
-};
-```
+- **ACTIVITY_RECOGNITION**: Acceso al acelerómetro
+- **INTERNET**: Sincronización de datos
 
 ---
 
-## 🧪 Pruebas
+## Pruebas
 
-### Pruebas Unitarias
+### Unitarias
 ```bash
 npm test
 ```
 
-### Pruebas de Integración
-1. Verificar detección de pasos en dispositivo Android
-2. Comprobar cálculos de calorías y distancia
-3. Validar actualización del dashboard web
-4. Probar modo offline
+### Manuales
+- Detección de pasos caminando
+- Cálculo de calorías y distancia
+- Actualización del dashboard web
+- Modo offline
+- Sincronización con servidor
+- Notificaciones push
 
 ---
 
-## 📊 Base de Datos
+## Troubleshooting
 
-### Esquema SQL
+**La app no detecta pasos**
+- Verificar permisos de actividad física
+- Probar caminando a diferente velocidad
+- Verificar que el sensor del teléfono funcione
 
-Ver `DOCUMENTACION_PROYECTO.md` para el esquema completo de base de datos.
+**El dashboard no se actualiza**
+- Verificar que el servidor esté corriendo en puerto 3000
+- Revisar consola del navegador
+- Confirmar que ambas apps estén en el mismo modo
 
-### Datos de Ejemplo
-
-```sql
--- Usuario de prueba
-INSERT INTO usuarios VALUES ('user_001', 'Juan Pérez', 'juan@example.com', NOW(), 'SM_X110');
-
--- Registro de actividad
-INSERT INTO registros_actividad (id_usuario, fecha, hora_inicio, pasos_totales, calorias_quemadas, distancia_metros) 
-VALUES ('user_001', CURDATE(), CURTIME(), 28, 1.12, 21.34);
-```
-
----
-
-## 🎥 Video Demostrativo
-
-**Duración:** 5 minutos máximo  
-**Formato:** 1080p, audio claro  
-**Plataforma:** YouTube
-
-### Contenido del Video
-
-1. **Introducción** (0:00 - 0:30)
-   - Presentación del proyecto
-   - Objetivos principales
-
-2. **App Wearable** (0:30 - 2:30)
-   - Pantalla principal
-   - Inicio de sesión
-   - Detección de pasos en tiempo real
-   - Cálculo de métricas
-
-3. **App Web** (2:30 - 4:30)
-   - Dashboard web
-   - Visualización de datos
-   - Actualización automática
-   - Controles interactivos
-
-4. **Conclusiones** (4:30 - 5:00)
-   - Resumen de funcionalidades
-   - Tecnologías utilizadas
-   - Agradecimientos
+**Error al compilar Android**
+- Verificar Android Studio instalado
+- Actualizar SDK de Android
+- Revisar variables de entorno
 
 ---
 
-## 👥 Integrantes del Equipo
+## Mejoras futuras
 
-- [Nombre del integrante 1]
-- [Nombre del integrante 2]
-- [Nombre del integrante 3]
-- [Nombre del integrante 4]
-
----
-
-## 📝 Licencia
-
-Este proyecto fue desarrollado para fines académicos en la Universidad Tecnológica del Valle de Toluca.
+- [ ] Autenticación de usuarios
+- [ ] GPS para distancia precisa
+- [ ] Gráficos de historial
+- [ ] Comparativas entre usuarios
+- [ ] Exportar datos a CSV/PDF
+- [ ] Ritmo cardíaco y velocidad
+- [ ] Modo oscuro/claro
+- [ ] Integración con redes sociales
 
 ---
 
-## 📞 Contacto
+## Documentación adicional
 
-Para más información sobre el proyecto, contactar a los integrantes del equipo.
-
----
-
-## 🙏 Agradecimientos
-
-- **Mtro. Roberto Vinicio Camacho Mendoza** - Docente de la materia
-- **Universidad Tecnológica del Valle de Toluca** - Institución educativa
-- **Comunidad de React Native y Expo** - Herramientas de desarrollo
+- `DOCUMENTACION_PROYECTO.md` - Documentación completa del proyecto
+- `docs/BASE_DE_DATOS.sql` - Esquema de base de datos
+- `docs/MANUAL_TECNICO.md` - Manual técnico
+- `docs/MANUAL_USUARIO.md` - Manual de usuario
+- `INSTRUCCIONES_SINCRONIZACION.md` - Guía de sincronización
 
 ---
 
-**Última actualización:** 08 de julio de 2026  
-**Versión:** 1.0.0# examen2
+**Versión:** 1.0.0
